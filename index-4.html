@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Kollekt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; display: flex; justify-content: center; }
+    .phone { width: 100%; max-width: 430px; background: #1a1a2e; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
+    .status { height: 44px; background: #1a1a2e; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 12px; color: #fff; font-weight: 700; flex-shrink: 0; }
+    .header { background: #1a1a2e; padding: 8px 16px 0; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#e91e8c,#9c27b0); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #fff; }
+    .logo-text { font-size: 22px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+    .notif { width: 36px; height: 36px; border-radius: 50%; background: #2a2a4a; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; position: relative; }
+    .notif-badge { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: #e91e8c; display: none; }
+    .coins-bar { margin: 10px 16px; background: #2a2a4a; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .coins-left { display: flex; align-items: center; gap: 10px; }
+    .coin-icon { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#ffd700,#ffa500); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #7a4000; }
+    .coin-amount { font-size: 20px; font-weight: 900; color: #fff; line-height: 1; }
+    .coin-label { font-size: 11px; color: #8888aa; font-weight: 600; }
+    .get-btn { background: linear-gradient(135deg,#e91e8c,#9c27b0); border: none; border-radius: 20px; padding: 7px 18px; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; }
+    .scroll-content { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+    .section-title { font-size: 12px; font-weight: 800; color: #8888aa; text-transform: uppercase; letter-spacing: 1.5px; padding: 14px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+    .see-all { font-size: 11px; color: #e91e8c; cursor: pointer; text-transform: none; letter-spacing: 0; }
+    .packs-row { display: flex; gap: 10px; padding: 0 16px 4px; overflow-x: auto; scrollbar-width: none; }
+    .packs-row::-webkit-scrollbar { display: none; }
+    .pack-card { flex-shrink: 0; width: 130px; border-radius: 16px; overflow: hidden; cursor: pointer; position: relative; transition: transform 0.15s; }
+    .pack-card:hover { transform: scale(1.03); }
+    .pack-card.purple { background: linear-gradient(160deg,#6a11cb,#2575fc); }
+    .pack-card.pink   { background: linear-gradient(160deg,#e91e8c,#ff6b35); }
+    .pack-card.teal   { background: linear-gradient(160deg,#00b09b,#96c93d); }
+    .pack-card.gold   { background: linear-gradient(160deg,#f7971e,#ffd200); }
+    .pack-card.dark   { background: linear-gradient(160deg,#232526,#414345); }
+    .pack-inner { padding: 14px 10px 12px; text-align: center; }
+    .pack-series { font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .pack-emoji { font-size: 36px; display: block; margin: 4px 0 6px; }
+    .pack-name { font-size: 12px; font-weight: 800; color: #fff; margin-bottom: 8px; line-height: 1.2; }
+    .pack-price { background: rgba(0,0,0,0.25); border-radius: 8px; padding: 3px 10px; font-size: 11px; font-weight: 800; color: #fff; display: inline-block; }
+    .pack-cards-count { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+    .new-badge { position: absolute; top: 8px; right: 8px; background: #ff3366; border-radius: 6px; padding: 2px 7px; font-size: 9px; font-weight: 800; color: #fff; }
+    .hot-badge { position: absolute; top: 8px; right: 8px; background: #ff6b00; border-radius: 6px; padding: 2px 7px; font-size: 9px; font-weight: 800; color: #fff; }
+
+    /* CATEGORY FILTER */
+    .cat-row { display: flex; gap: 8px; padding: 0 16px 4px; overflow-x: auto; scrollbar-width: none; }
+    .cat-row::-webkit-scrollbar { display: none; }
+    .cat-pill { flex-shrink: 0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; border: 1.5px solid #2a2a4a; color: #8888aa; background: transparent; font-family: 'Nunito', sans-serif; }
+    .cat-pill.active { background: #e91e8c; border-color: #e91e8c; color: #fff; }
+
+    /* CARDS */
+    .coll-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 16px; }
+    .coll-card { border-radius: 12px; aspect-ratio: 2/3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative; transition: transform 0.15s; }
+    .coll-card:hover { transform: scale(1.04); }
+    .coll-card.legendary { background: linear-gradient(160deg,#ffd700,#ff8c00); border: 2px solid #ffd700; }
+    .coll-card.ultra     { background: linear-gradient(160deg,#da70d6,#8a2be2); border: 1.5px solid #da70d6; }
+    .coll-card.rare      { background: linear-gradient(160deg,#00bfff,#1e90ff); border: 1.5px solid #00bfff; }
+    .coll-card.common    { background: linear-gradient(160deg,#708090,#2f4f4f); border: 1.5px solid #708090; }
+    .coll-emoji { font-size: 26px; }
+    .coll-name { font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.95); text-align: center; line-height: 1.2; padding: 0 4px; }
+    .coll-rarity { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; }
+    .coll-cat-tag { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+    .empty-coll { grid-column: 1/-1; text-align: center; padding: 2.5rem 1rem; color: #8888aa; font-size: 13px; font-weight: 600; }
+    .empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
+
+    /* STATS */
+    .stats-row { display: flex; gap: 8px; padding: 0 16px; margin-bottom: 4px; }
+    .stat-box { flex: 1; background: #2a2a4a; border-radius: 12px; padding: 10px; text-align: center; }
+    .stat-num { font-size: 20px; font-weight: 900; color: #fff; }
+    .stat-label { font-size: 10px; font-weight: 600; color: #8888aa; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: #12122a; border-top: 1px solid #2a2a4a; display: flex; padding: 8px 0 12px; z-index: 100; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; padding: 4px 0; }
+    .nav-icon { font-size: 22px; }
+    .nav-label { font-size: 9px; font-weight: 700; color: #8888aa; }
+    .nav-item.active .nav-label { color: #e91e8c; }
+    .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: #e91e8c; margin-top: 2px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* OPEN SCREEN */
+    .open-wrap { padding: 16px; }
+    .back-btn-sm { background: #2a2a4a; border: none; border-radius: 10px; padding: 8px 14px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; }
+    .open-pack-big { width: 170px; height: 240px; border-radius: 22px; margin: 16px auto; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s; }
+    .open-pack-big:hover { transform: scale(1.04) rotate(-1.5deg); }
+    .open-pack-big.purple { background: linear-gradient(160deg,#6a11cb,#2575fc); }
+    .open-pack-big.pink   { background: linear-gradient(160deg,#e91e8c,#ff6b35); }
+    .open-pack-big.teal   { background: linear-gradient(160deg,#00b09b,#96c93d); }
+    .open-pack-big.gold   { background: linear-gradient(160deg,#f7971e,#ffd200); }
+    .open-pack-big.dark   { background: linear-gradient(160deg,#232526,#414345); }
+    .big-series { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.6); letter-spacing: 2px; text-transform: uppercase; }
+    .big-emoji { font-size: 54px; }
+    .big-name { font-size: 18px; font-weight: 900; color: #fff; }
+    .open-btn-big { background: linear-gradient(135deg,#e91e8c,#9c27b0); border: none; border-radius: 14px; padding: 15px; color: #fff; font-size: 16px; font-weight: 900; cursor: pointer; font-family: 'Nunito', sans-serif; width: 100%; margin-top: 4px; transition: transform 0.1s; }
+    .open-btn-big:active { transform: scale(0.98); }
+    .pack-contents { background: #2a2a4a; border-radius: 14px; padding: 14px; margin-top: 16px; }
+    .pack-contents-title { font-size: 12px; font-weight: 800; color: #8888aa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .rarity-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .rarity-name { font-size: 13px; font-weight: 700; }
+    .rarity-name.legendary { color: #ffd700; }
+    .rarity-name.ultra { color: #da70d6; }
+    .rarity-name.rare { color: #00bfff; }
+    .rarity-name.common { color: #8888aa; }
+    .rarity-chance { font-size: 12px; color: #8888aa; font-weight: 600; }
+
+    /* REVEAL */
+    .reveal-area { text-align: center; padding: 8px 0; }
+    .reveal-title { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .reveal-sub { font-size: 13px; color: #8888aa; margin-bottom: 16px; }
+    .reveal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .rev-card { border-radius: 14px; aspect-ratio: 2/3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; animation: popIn 0.4s ease both; }
+    .rev-card:nth-child(1) { animation-delay: 0.1s; }
+    .rev-card:nth-child(2) { animation-delay: 0.25s; }
+    .rev-card:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes popIn { from { opacity:0; transform: scale(0.6) rotate(-6deg); } to { opacity:1; transform: none; } }
+    .rev-card.legendary { background: linear-gradient(160deg,#ffd700,#ff8c00); border: 2px solid #ffd700; }
+    .rev-card.ultra     { background: linear-gradient(160deg,#da70d6,#8a2be2); border: 1.5px solid #da70d6; }
+    .rev-card.rare      { background: linear-gradient(160deg,#00bfff,#1e90ff); border: 1.5px solid #00bfff; }
+    .rev-card.common    { background: linear-gradient(160deg,#708090,#2f4f4f); border: 1.5px solid #708090; }
+    .rev-emoji { font-size: 30px; }
+    .rev-name { font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.95); text-align: center; padding: 0 4px; }
+    .rev-rarity { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; background: rgba(0,0,0,0.25); padding: 2px 7px; border-radius: 6px; }
+    .again-btn { background: #2a2a4a; border: none; border-radius: 12px; padding: 13px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; width: 100%; margin-bottom: 8px; }
+    .pink-btn { background: linear-gradient(135deg,#e91e8c,#9c27b0); border: none; border-radius: 12px; padding: 13px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; width: 100%; }
+
+    /* TRADE SCREEN */
+    .trade-wrap { padding: 16px; }
+    .trade-tabs { display: flex; gap: 4px; background: #12122a; border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+    .trade-tab { flex: 1; padding: 9px; text-align: center; font-size: 13px; font-weight: 800; color: #8888aa; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+    .trade-tab.active { background: #2a2a4a; color: #fff; }
+
+    /* MARKTPLATZ */
+    .market-list { display: flex; flex-direction: column; gap: 10px; }
+    .market-item { background: #2a2a4a; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+    .market-card-mini { width: 44px; height: 60px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; }
+    .market-card-mini.legendary { background: linear-gradient(160deg,#ffd700,#ff8c00); border: 1.5px solid #ffd700; }
+    .market-card-mini.ultra     { background: linear-gradient(160deg,#da70d6,#8a2be2); border: 1.5px solid #da70d6; }
+    .market-card-mini.rare      { background: linear-gradient(160deg,#00bfff,#1e90ff); border: 1.5px solid #00bfff; }
+    .market-card-mini.common    { background: linear-gradient(160deg,#708090,#2f4f4f); border: 1.5px solid #708090; }
+    .market-mini-emoji { font-size: 18px; }
+    .market-info { flex: 1; }
+    .market-card-name { font-size: 14px; font-weight: 800; color: #fff; }
+    .market-seller { font-size: 11px; color: #8888aa; margin-top: 2px; }
+    .market-rarity-badge { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; margin-top: 4px; }
+    .market-rarity-badge.legendary { background: rgba(255,215,0,0.2); color: #ffd700; }
+    .market-rarity-badge.ultra     { background: rgba(218,112,214,0.2); color: #da70d6; }
+    .market-rarity-badge.rare      { background: rgba(0,191,255,0.2); color: #00bfff; }
+    .market-rarity-badge.common    { background: rgba(112,128,144,0.2); color: #aaa; }
+    .market-price { text-align: right; }
+    .market-price-num { font-size: 16px; font-weight: 900; color: #ffd700; }
+    .market-price-label { font-size: 10px; color: #8888aa; }
+    .buy-btn { background: linear-gradient(135deg,#e91e8c,#9c27b0); border: none; border-radius: 8px; padding: 6px 14px; color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; margin-top: 6px; display: block; width: 100%; }
+
+    /* DIREKT TAUSCHEN */
+    .direct-title { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .direct-sub { font-size: 13px; color: #8888aa; margin-bottom: 16px; line-height: 1.5; }
+    .step-box { background: #2a2a4a; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .step-num { font-size: 11px; font-weight: 800; color: #e91e8c; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .step-text { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .my-cards-mini { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .my-cards-mini::-webkit-scrollbar { display: none; }
+    .mini-selectable { width: 50px; height: 68px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; cursor: pointer; transition: transform 0.15s; border: 2px solid transparent; }
+    .mini-selectable:hover { transform: scale(1.08); }
+    .mini-selectable.selected { border-color: #e91e8c; transform: scale(1.08); }
+    .mini-selectable.legendary { background: linear-gradient(160deg,#ffd700,#ff8c00); }
+    .mini-selectable.ultra     { background: linear-gradient(160deg,#da70d6,#8a2be2); }
+    .mini-selectable.rare      { background: linear-gradient(160deg,#00bfff,#1e90ff); }
+    .mini-selectable.common    { background: linear-gradient(160deg,#708090,#2f4f4f); }
+    .mini-emoji { font-size: 18px; }
+    .mini-name { font-size: 7px; font-weight: 800; color: rgba(255,255,255,0.9); text-align: center; padding: 0 2px; line-height: 1.1; }
+    .user-input { width: 100%; background: #12122a; border: 1.5px solid #3a3a5a; border-radius: 10px; padding: 10px 14px; font-size: 14px; font-family: 'Nunito', sans-serif; color: #fff; outline: none; }
+    .user-input:focus { border-color: #e91e8c; }
+    .send-trade-btn { background: linear-gradient(135deg,#e91e8c,#9c27b0); border: none; border-radius: 12px; padding: 13px; color: #fff; font-size: 15px; font-weight: 900; cursor: pointer; font-family: 'Nunito', sans-serif; width: 100%; margin-top: 8px; }
+    .trade-sent { background: #2a2a4a; border-radius: 14px; padding: 20px; text-align: center; display: none; }
+    .trade-sent-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+    .trade-sent-text { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .trade-sent-sub { font-size: 12px; color: #8888aa; }
+
+    /* COLLECTION FULL */
+    .full-coll-wrap { padding: 16px; }
+    .screen-big-title { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .screen-big-sub { font-size: 13px; color: #8888aa; margin-bottom: 14px; }
+    .full-coll-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+    .sell-badge { position: absolute; bottom: 5px; right: 5px; background: #e91e8c; border-radius: 6px; padding: 2px 5px; font-size: 8px; font-weight: 800; color: #fff; display: none; }
+    .coll-card:hover .sell-badge { display: block; }
+
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #e91e8c; color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 800; opacity: 0; transition: opacity 0.3s; z-index: 999; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●●</span></div>
+
+  <!-- HOME -->
+  <div id="home-screen" class="screen active">
+    <div class="header">
+      <div class="avatar">L</div>
+      <div class="logo-text">Kollekt</div>
+      <div class="notif" onclick="goTrade()">🔔<div class="notif-badge" id="notif-badge"></div></div>
+    </div>
+    <div class="coins-bar">
+      <div class="coins-left">
+        <div class="coin-icon">★</div>
+        <div>
+          <div class="coin-amount" id="coin-display">500</div>
+          <div class="coin-label">Coins</div>
+        </div>
+      </div>
+      <button class="get-btn">+ Coins</button>
+    </div>
+    <div class="scroll-content">
+      <div class="section-title">Featured Packs <span class="see-all" onclick="goPacks()">Alle →</span></div>
+      <div class="packs-row" id="home-packs-row"></div>
+      <div class="section-title">Deine Stats</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Karten</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-rare">0</div><div class="stat-label">Rare+</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-legend">0</div><div class="stat-label">Legendary</div></div>
+      </div>
+      <div class="section-title">Letzte Karten <span class="see-all" onclick="goCollection()">Alle →</span></div>
+      <div class="coll-grid" id="home-coll"></div>
+    </div>
+  </div>
+
+  <!-- PACKS SCREEN -->
+  <div id="packs-screen" class="screen">
+    <div class="scroll-content" style="padding-top:16px; padding-bottom:80px;">
+      <div style="padding: 0 16px; margin-bottom: 12px;">
+        <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:4px;">Packs</div>
+        <div style="font-size:13px;color:#8888aa;">Öffne Packs und sammle Karten</div>
+      </div>
+      <div id="all-packs-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px;"></div>
+    </div>
+  </div>
+
+  <!-- OPEN SCREEN -->
+  <div id="open-screen" class="screen">
+    <div class="scroll-content" style="padding-bottom:80px;">
+      <div class="open-wrap">
+        <button class="back-btn-sm" onclick="goPacks()">← Zurück</button>
+        <div id="pack-area">
+          <div class="open-pack-big purple" id="big-pack" onclick="openPack()">
+            <div class="big-series" id="big-series">Season 1</div>
+            <div class="big-emoji" id="big-emoji">🌌</div>
+            <div class="big-name" id="big-name">Galaxy Pack</div>
+          </div>
+          <button class="open-btn-big" id="open-main-btn" onclick="openPack()">Pack öffnen</button>
+          <div class="pack-contents" id="pack-contents"></div>
+        </div>
+        <div class="reveal-area" id="reveal-area" style="display:none;">
+          <div class="reveal-title">Du hast gezogen! ✨</div>
+          <div class="reveal-sub" id="reveal-sub"></div>
+          <div class="reveal-grid" id="reveal-grid"></div>
+          <button class="again-btn" onclick="resetOpen()">Nochmal öffnen</button>
+          <button class="pink-btn" onclick="goCollection()">Zur Sammlung →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLLECTION SCREEN -->
+  <div id="coll-screen" class="screen">
+    <div class="scroll-content" style="padding-bottom:80px;">
+      <div class="full-coll-wrap">
+        <div class="screen-big-title">Meine Sammlung</div>
+        <div class="screen-big-sub" id="coll-sub">0 Karten</div>
+        <div class="cat-row" id="coll-cat-row"></div>
+        <div style="height:12px;"></div>
+        <div class="full-coll-grid" id="full-coll-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRADE SCREEN -->
+  <div id="trade-screen" class="screen">
+    <div class="scroll-content" style="padding-bottom:80px;">
+      <div class="trade-wrap">
+        <div class="screen-big-title">Tauschen</div>
+        <div class="screen-big-sub">Marktplatz & Direkthandel</div>
+        <div class="trade-tabs">
+          <div class="trade-tab active" id="ttab-market" onclick="switchTradeTab('market')">🏪 Marktplatz</div>
+          <div class="trade-tab" id="ttab-direct" onclick="switchTradeTab('direct')">🔄 Direkt</div>
+        </div>
+
+        <div id="trade-market">
+          <div class="market-list" id="market-list"></div>
+        </div>
+
+        <div id="trade-direct" style="display:none;">
+          <div class="direct-title">Karte direkt senden</div>
+          <div class="direct-sub">Wähle eine Karte aus deiner Sammlung und schicke sie an einen Freund.</div>
+          <div class="step-box">
+            <div class="step-num">Schritt 1 — Karte auswählen</div>
+            <div class="step-text">Welche Karte möchtest du senden?</div>
+            <div class="my-cards-mini" id="direct-cards"></div>
+          </div>
+          <div class="step-box">
+            <div class="step-num">Schritt 2 — Empfänger</div>
+            <div class="step-text">Benutzername deines Freundes</div>
+            <input class="user-input" id="trade-recipient" placeholder="z.B. maxmustermann" />
+          </div>
+          <div id="trade-sent-box" class="trade-sent">
+            <span class="trade-sent-icon">🎉</span>
+            <div class="trade-sent-text">Tauschangebot gesendet!</div>
+            <div class="trade-sent-sub">Dein Freund muss es noch annehmen.</div>
+          </div>
+          <button class="send-trade-btn" onclick="sendDirectTrade()">Tauschangebot senden →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="goHome()"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item" id="nav-packs" onclick="goPacks()"><div class="nav-icon">📦</div><div class="nav-label">Packs</div></div>
+    <div class="nav-item" id="nav-coll" onclick="goCollection()"><div class="nav-icon">📚</div><div class="nav-label">Sammlung</div></div>
+    <div class="nav-item" id="nav-trade" onclick="goTrade()"><div class="nav-icon">🔄</div><div class="nav-label">Tauschen</div></div>
+    <div class="nav-item" id="nav-profile" onclick="goHome()"><div class="nav-icon">👤</div><div class="nav-label">Profil</div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SETS = {
+  tiere: {
+    name: "Tiere", color: "teal",
+    cards: [
+      {name:"Feuerfuchs",  emoji:"🦊", rarity:"legendary"},
+      {name:"Eisdrache",   emoji:"🐉", rarity:"ultra"},
+      {name:"Mondkatze",   emoji:"🐱", rarity:"ultra"},
+      {name:"Sturmbär",    emoji:"🐻", rarity:"rare"},
+      {name:"Wasseradler", emoji:"🦅", rarity:"rare"},
+      {name:"Blattfrosch", emoji:"🐸", rarity:"common"},
+      {name:"Sandgecko",   emoji:"🦎", rarity:"common"},
+      {name:"Nebelschaf",  emoji:"🐑", rarity:"common"},
+    ]
+  },
+  space: {
+    name: "Space", color: "purple",
+    cards: [
+      {name:"Supernova",   emoji:"💥", rarity:"legendary"},
+      {name:"Schwarzes Loch", emoji:"🌑", rarity:"ultra"},
+      {name:"Komet",       emoji:"☄️", rarity:"ultra"},
+      {name:"Saturn",      emoji:"🪐", rarity:"rare"},
+      {name:"Mondbase",    emoji:"🌕", rarity:"rare"},
+      {name:"Satellit",    emoji:"🛰️", rarity:"common"},
+      {name:"Asteroid",    emoji:"🪨", rarity:"common"},
+      {name:"Meteor",      emoji:"⭐", rarity:"common"},
+    ]
+  },
+  essen: {
+    name: "Food", color: "pink",
+    cards: [
+      {name:"Goldener Ramen", emoji:"🍜", rarity:"legendary"},
+      {name:"Truffle Pizza",  emoji:"🍕", rarity:"ultra"},
+      {name:"Dragon Sushi",   emoji:"🍣", rarity:"ultra"},
+      {name:"Lava Burger",    emoji:"🍔", rarity:"rare"},
+      {name:"Magic Taco",     emoji:"🌮", rarity:"rare"},
+      {name:"Eis am Stiel",   emoji:"🍦", rarity:"common"},
+      {name:"Brezel",         emoji:"🥨", rarity:"common"},
+      {name:"Donut",          emoji:"🍩", rarity:"common"},
+    ]
+  },
+  sport: {
+    name: "Sport", color: "gold",
+    cards: [
+      {name:"Weltmeister",  emoji:"🏆", rarity:"legendary"},
+      {name:"Goldmedaille", emoji:"🥇", rarity:"ultra"},
+      {name:"Slam Dunk",    emoji:"🏀", rarity:"ultra"},
+      {name:"Freistoß",     emoji:"⚽", rarity:"rare"},
+      {name:"Homerun",      emoji:"⚾", rarity:"rare"},
+      {name:"Tennisass",    emoji:"🎾", rarity:"common"},
+      {name:"Surfer",       emoji:"🏄", rarity:"common"},
+      {name:"Skifahrer",    emoji:"⛷️", rarity:"common"},
+    ]
+  },
+  mystery: {
+    name: "Mystery", color: "dark",
+    cards: [
+      {name:"Dunkler Ritter",emoji:"🗡️", rarity:"legendary"},
+      {name:"Zeitreisender", emoji:"⏳", rarity:"ultra"},
+      {name:"Geisterschiff", emoji:"🚢", rarity:"ultra"},
+      {name:"Alchemist",     emoji:"⚗️", rarity:"rare"},
+      {name:"Schatzkarte",   emoji:"🗺️", rarity:"rare"},
+      {name:"Kristallkugel", emoji:"🔮", rarity:"common"},
+      {name:"Schlüssel",     emoji:"🗝️", rarity:"common"},
+      {name:"Sanduhr",       emoji:"⌛", rarity:"common"},
+    ]
+  },
+};
+
+const PACKS = [
+  {id:"galaxy",  style:"purple", emoji:"🌌", series:"Season 1", name:"Galaxy Pack",   price:150, sets:["space","mystery"],  badge:"NEU"},
+  {id:"flame",   style:"pink",   emoji:"🔥", series:"Classic",  name:"Flame Pack",    price:100, sets:["tiere","sport"],    badge:null},
+  {id:"nature",  style:"teal",   emoji:"🌿", series:"Special",  name:"Nature Pack",   price:75,  sets:["tiere","essen"],    badge:null},
+  {id:"legend",  style:"gold",   emoji:"👑", series:"Rare",     name:"Legend Pack",   price:200, sets:["sport","mystery"],  badge:"HOT"},
+  {id:"midnight",style:"dark",   emoji:"🌙", series:"Limited",  name:"Midnight Pack", price:175, sets:["mystery","space"],  badge:"NEU"},
+];
+
+const WEIGHTS = {legendary:5, ultra:15, rare:25, common:55};
+const MARKET_ITEMS = [
+  {name:"Feuerfuchs",  emoji:"🦊", rarity:"legendary", seller:"Alex_K",   price:450, set:"Tiere"},
+  {name:"Supernova",   emoji:"💥", rarity:"legendary", seller:"Mia_W",    price:500, set:"Space"},
+  {name:"Eisdrache",   emoji:"🐉", rarity:"ultra",     seller:"Ben_T",    price:180, set:"Tiere"},
+  {name:"Zeitreisender",emoji:"⏳",rarity:"ultra",     seller:"Sara_M",   price:200, set:"Mystery"},
+  {name:"Saturn",      emoji:"🪐", rarity:"rare",      seller:"Jonas_P",  price:80,  set:"Space"},
+  {name:"Lava Burger", emoji:"🍔", rarity:"rare",      seller:"Lena_R",   price:60,  set:"Food"},
+];
+
+let collection = JSON.parse(localStorage.getItem('kollekt-v3') || '[]');
+let coins = parseInt(localStorage.getItem('kollekt-coins-v3') || '500');
+let currentPack = PACKS[0];
+let selectedDirectCard = null;
+let collFilter = 'alle';
+let tradeTab = 'market';
+
+function save() {
+  localStorage.setItem('kollekt-v3', JSON.stringify(collection));
+  localStorage.setItem('kollekt-coins-v3', String(coins));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function weightedPickFromSets(sets) {
+  let pool = [];
+  sets.forEach(s => {
+    const setCards = SETS[s].cards;
+    setCards.forEach(c => { for(let i=0;i<WEIGHTS[c.rarity];i++) pool.push({...c, set: SETS[s].name}); });
+  });
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function updateCoins() { document.getElementById('coin-display').textContent = coins; }
+function updateStats() {
+  document.getElementById('stat-total').textContent = collection.length;
+  document.getElementById('stat-rare').textContent = collection.filter(c=>c.rarity!=='common').length;
+  document.getElementById('stat-legend').textContent = collection.filter(c=>c.rarity==='legendary').length;
+}
+
+function cardEl(c, cls='coll', extra='') {
+  return `<div class="${cls}-card ${c.rarity}" ${extra}>
+    <div class="${cls}-emoji">${c.emoji}</div>
+    <div class="${cls}-name">${c.name}</div>
+    <div class="${cls}-rarity">${c.rarity}</div>
+    ${c.set ? `<div class="${cls}-cat-tag">${c.set}</div>` : ''}
+    ${cls==='coll'?'<div class="sell-badge">verkaufen</div>':''}
+  </div>`;
+}
+
+function renderPackCard(p, wide=false) {
+  const badge = p.badge === 'NEU' ? `<div class="new-badge">NEU</div>` : p.badge === 'HOT' ? `<div class="hot-badge">🔥 HOT</div>` : '';
+  const setsLabel = p.sets.map(s => SETS[s].name).join(' + ');
+  return `<div class="pack-card ${p.style}" onclick="goToOpen('${p.id}')" style="${wide?'width:100%':''}">
+    ${badge}
+    <div class="pack-inner">
+      <div class="pack-series">${p.series}</div>
+      <span class="pack-emoji">${p.emoji}</span>
+      <div class="pack-name">${p.name}</div>
+      <div class="pack-price">${p.price} ★</div>
+      <div class="pack-cards-count">${setsLabel}</div>
+    </div>
+  </div>`;
+}
+
+function renderHomePacks() {
+  document.getElementById('home-packs-row').innerHTML = PACKS.slice(0,4).map(p => renderPackCard(p)).join('');
+}
+
+function renderAllPacks() {
+  document.getElementById('all-packs-grid').innerHTML = PACKS.map(p => renderPackCard(p, true)).join('');
+}
+
+function renderHomeColl() {
+  const grid = document.getElementById('home-coll');
+  const show = collection.slice(-6).reverse();
+  grid.innerHTML = show.length === 0
+    ? '<div class="empty-coll"><span class="empty-icon">🃏</span>Noch keine Karten!<br>Öffne dein erstes Pack.</div>'
+    : show.map(c => cardEl(c,'coll')).join('');
+  updateStats(); updateCoins();
+}
+
+function renderFullColl() {
+  const filtered = collFilter === 'alle' ? collection : collection.filter(c => c.set === collFilter || c.rarity === collFilter);
+  document.getElementById('coll-sub').textContent = collection.length + ' Karten · ' + filtered.length + ' angezeigt';
+  const grid = document.getElementById('full-coll-grid');
+  grid.innerHTML = filtered.length === 0
+    ? '<div class="empty-coll"><span class="empty-icon">🃏</span>Keine Karten in dieser Kategorie.</div>'
+    : [...filtered].reverse().map(c => cardEl(c,'coll')).join('');
+}
+
+function renderCollFilters() {
+  const cats = ['alle', ...Object.values(SETS).map(s=>s.name), 'legendary','ultra','rare','common'];
+  document.getElementById('coll-cat-row').innerHTML = cats.map(c =>
+    `<button class="cat-pill ${collFilter===c?'active':''}" onclick="setCollFilter('${c}')">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`
+  ).join('');
+}
+
+function setCollFilter(f) {
+  collFilter = f;
+  renderCollFilters();
+  renderFullColl();
+}
+
+function renderMarket() {
+  document.getElementById('market-list').innerHTML = MARKET_ITEMS.map((item,i) => `
+    <div class="market-item">
+      <div class="market-card-mini ${item.rarity}">
+        <div class="market-mini-emoji">${item.emoji}</div>
+      </div>
+      <div class="market-info">
+        <div class="market-card-name">${item.name}</div>
+        <div class="market-seller">von ${item.seller} · ${item.set}</div>
+        <span class="market-rarity-badge ${item.rarity}">${item.rarity}</span>
+      </div>
+      <div class="market-price">
+        <div class="market-price-num">${item.price}</div>
+        <div class="market-price-label">Coins</div>
+        <button class="buy-btn" onclick="buyMarket(${i})">Kaufen</button>
+      </div>
+    </div>`).join('');
+}
+
+function buyMarket(i) {
+  const item = MARKET_ITEMS[i];
+  if(coins < item.price) { showToast('Nicht genug Coins! (' + coins + ' ★)'); return; }
+  coins -= item.price;
+  collection.push({name:item.name, emoji:item.emoji, rarity:item.rarity, set:item.set});
+  MARKET_ITEMS.splice(i, 1);
+  save();
+  updateCoins();
+  renderMarket();
+  showToast('✓ ' + item.name + ' gekauft!');
+}
+
+function renderDirectCards() {
+  const wrap = document.getElementById('direct-cards');
+  if(collection.length === 0) {
+    wrap.innerHTML = '<div style="color:#8888aa;font-size:12px;">Noch keine Karten zum Tauschen.</div>';
+    return;
+  }
+  const unique = [];
+  const seen = new Set();
+  collection.forEach(c => { if(!seen.has(c.name)) { seen.add(c.name); unique.push(c); } });
+  wrap.innerHTML = unique.slice(0,12).map((c,i) =>
+    `<div class="mini-selectable ${c.rarity} ${selectedDirectCard===i?'selected':''}" onclick="selectDirectCard(${i})">
+      <div class="mini-emoji">${c.emoji}</div>
+      <div class="mini-name">${c.name}</div>
+    </div>`).join('');
+}
+
+function selectDirectCard(i) {
+  selectedDirectCard = i;
+  renderDirectCards();
+}
+
+function sendDirectTrade() {
+  const recipient = document.getElementById('trade-recipient').value.trim();
+  if(selectedDirectCard === null) { showToast('Bitte zuerst eine Karte auswählen!'); return; }
+  if(!recipient) { showToast('Bitte einen Benutzernamen eingeben!'); return; }
+  document.getElementById('trade-sent-box').style.display = 'block';
+  showToast('🎉 Angebot an ' + recipient + ' gesendet!');
+  selectedDirectCard = null;
+  document.getElementById('trade-recipient').value = '';
+  setTimeout(() => { document.getElementById('trade-sent-box').style.display = 'none'; }, 4000);
+}
+
+function switchTradeTab(tab) {
+  tradeTab = tab;
+  document.getElementById('ttab-market').classList.toggle('active', tab==='market');
+  document.getElementById('ttab-direct').classList.toggle('active', tab==='direct');
+  document.getElementById('trade-market').style.display = tab==='market' ? 'block' : 'none';
+  document.getElementById('trade-direct').style.display = tab==='direct' ? 'block' : 'none';
+  if(tab==='direct') renderDirectCards();
+}
+
+function setActiveNav(id) {
+  ['nav-home','nav-packs','nav-coll','nav-trade','nav-profile'].forEach(n => {
+    const el = document.getElementById(n);
+    el.classList.remove('active');
+    const dot = el.querySelector('.nav-dot');
+    if(dot) dot.remove();
+  });
+  const active = document.getElementById(id);
+  active.classList.add('active');
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot';
+  active.appendChild(dot);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  showScreen('home-screen'); setActiveNav('nav-home');
+  renderHomePacks(); renderHomeColl();
+}
+
+function goPacks() {
+  showScreen('packs-screen'); setActiveNav('nav-packs');
+  renderAllPacks();
+}
+
+function goCollection() {
+  showScreen('coll-screen'); setActiveNav('nav-coll');
+  renderCollFilters(); renderFullColl();
+}
+
+function goTrade() {
+  showScreen('trade-screen'); setActiveNav('nav-trade');
+  renderMarket();
+}
+
+function goToOpen(packId) {
+  currentPack = PACKS.find(p => p.id === packId) || PACKS[0];
+  const p = currentPack;
+  document.getElementById('big-pack').className = 'open-pack-big ' + p.style;
+  document.getElementById('big-emoji').textContent = p.emoji;
+  document.getElementById('big-series').textContent = p.series;
+  document.getElementById('big-name').textContent = p.name;
+  document.getElementById('open-main-btn').textContent = 'Pack öffnen — ' + p.price + ' ★';
+  document.getElementById('pack-contents').innerHTML = `
+    <div class="pack-contents-title">Enthaltene Sets: ${p.sets.map(s=>SETS[s].name).join(' + ')}</div>
+    <div class="rarity-row"><span class="rarity-name legendary">Legendary</span><span class="rarity-chance">~5%</span></div>
+    <div class="rarity-row"><span class="rarity-name ultra">Ultra Rare</span><span class="rarity-chance">~15%</span></div>
+    <div class="rarity-row"><span class="rarity-name rare">Rare</span><span class="rarity-chance">~25%</span></div>
+    <div class="rarity-row"><span class="rarity-name common">Common</span><span class="rarity-chance">~55%</span></div>`;
+  document.getElementById('pack-area').style.display = 'block';
+  document.getElementById('reveal-area').style.display = 'none';
+  showScreen('open-screen'); setActiveNav('nav-packs');
+}
+
+function openPack() {
+  if(coins < currentPack.price) { showToast('Nicht genug Coins! Du hast ' + coins + ' ★'); return; }
+  coins -= currentPack.price;
+  const drawn = [
+    weightedPickFromSets(currentPack.sets),
+    weightedPickFromSets(currentPack.sets),
+    weightedPickFromSets(currentPack.sets),
+  ];
+  drawn.forEach(c => collection.push(c));
+  save();
+  document.getElementById('reveal-sub').textContent = '3 neue Karten aus dem ' + currentPack.name;
+  document.getElementById('reveal-grid').innerHTML = drawn.map(c => `
+    <div class="rev-card ${c.rarity}">
+      <div class="rev-emoji">${c.emoji}</div>
+      <div class="rev-name">${c.name}</div>
+      <div class="rev-rarity">${c.rarity}</div>
+    </div>`).join('');
+  document.getElementById('pack-area').style.display = 'none';
+  document.getElementById('reveal-area').style.display = 'block';
+  updateCoins();
+  const hasLegend = drawn.some(c => c.rarity === 'legendary');
+  if(hasLegend) showToast('🌟 Legendary gezogen!');
+}
+
+function resetOpen() {
+  document.getElementById('pack-area').style.display = 'block';
+  document.getElementById('reveal-area').style.display = 'none';
+}
+
+goHome();
+</script>
+</body>
+</html>
